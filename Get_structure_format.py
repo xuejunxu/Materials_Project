@@ -34,16 +34,12 @@ data = {
         'material_id',
     ]
 }
-#print(data.items())
 
 r = requests.post('https://materialsproject.org/rest/v2/query',
                  headers={'X-API-KEY': 'YOUR_KEY_HERE'},
                  data={k: json.dumps(v) for k,v in data.items()})
 response_content = r.json() # a dict
-#print(response_content)
 list_res=response_content['response']
-#print(len(list_res))
-#print(list_res)
 
 #put my API key from https://materialsproject.org/ in the mpr
 API_key="YOUR_KEY_HERE"
@@ -96,30 +92,27 @@ def get_matrix_by_mid(material_id):
     #convert the fractional coordinates to Cartesian coordinates
     #the conversion relationship between two coordinates can refer to
     # https://en.wikipedia.org/wiki/Fractional_coordinates
-    #print('---------------------------------------getting matrix-------------------------------------------')
     omega=len_a*len_b*len_c*(1-(cos(alpha))**2-(cos(beta))**2-(cos(gamma))**2+2*cos(alpha)*cos(beta)*cos(gamma))**0.5
     num_1_1=len_a*sin(beta)
     num_1_1=Decimal(num_1_1).quantize(Decimal('0.000000'))
     num_1_2=Decimal(0).quantize(Decimal('0.000000'))
     num_1_3=len_a*cos(beta)
     num_1_3=Decimal(num_1_3).quantize(Decimal('0.000000'))
-    #print(num_1_1,num_1_2,num_1_3)
+
     num_2_1=len_b*(cos(gamma)-cos(alpha)*cos(beta))/sin(beta)
     num_2_1=Decimal(num_2_1).quantize(Decimal('0.000000'))
     num_2_2=omega/len_a/len_c/sin(beta)
     num_2_2=Decimal(num_2_2).quantize(Decimal('0.000000'))
     num_2_3=len_b*cos(alpha)
     num_2_3=Decimal(num_2_3).quantize(Decimal('0.000000'))
-    #print(num_2_1,num_2_2,num_2_3)
+
     num_3_1=Decimal(0).quantize(Decimal('0.000000'))
     num_3_2=Decimal(0).quantize(Decimal('0.000000'))
     num_3_3=Decimal(len_c).quantize(Decimal('0.000000'))
-    #print(num_3_1,num_3_2,num_3_3)
-    #print(type(num_3_3))
+
     out_matrix=str(num_1_1)+' '+str(num_1_2)+' '+str(num_1_3)+'\n'\
     +str(num_2_1)+' '+str(num_2_2)+' '+str(num_2_3)+'\n'+str(num_3_1)+\
     ' '+str(num_3_2)+' '+str(num_3_3)
-    #print(out_matrix)
     #return the matrix that uses the Cartesian coordinate
     return out_matrix
 
@@ -160,18 +153,15 @@ def generate_order_element(cell_for,formu):
     str_element=''
     for string in new_formu_list:
         str_element+=string
-    #print(str_element)
     element_list=str_element.split(' ')
     ele_num_list=[]
     for element in element_list:
         ele_num_list.append(cell_for[element])
-    #print(ele_num_list)
     ele_num_str=''
     for number in ele_num_list:
         int_num=int(number)
         ele_num_str=ele_num_str+str(int_num)+' '
     ele_num_str=ele_num_str[:-1]
-    #print(ele_num_str)
     final_string=str_element+'\n'+ele_num_str
     return final_string
 
@@ -184,7 +174,6 @@ def get_structure_by_mid(material_id,final_string):
     
     atom_index=split_cif.index(' _atom_site_occupancy')
     atom_struc_list=split_cif[atom_index+1:-1]
-    #print(atom_struc_list)
 
     atom_new_list=[]
 
@@ -192,11 +181,9 @@ def get_structure_by_mid(material_id,final_string):
         stuff=stuff[2:]
         split_stf=stuff.split('  ')
         atom_new_list.append(split_stf)
-    #print(atom_new_list)
 
     element_list=final_string.split('\n')
     element_list1=element_list[0].split(' ')
-    #print(element_list1)
     structure_string=''
     for idx1 in range(len(element_list1)):
         for idx2 in range(len(atom_new_list)):
@@ -239,21 +226,6 @@ def generate_file(material_id):
     final_string=generate_order_element(cell_for,formu)
     structure_string=get_structure_by_mid(material_id,final_string)
     generate_POSCAR(formu,out_matrix,final_string,structure_string,material_id)
-
-# test area
-# out_matrix=get_matrix_by_mid('mp-6532')
-
-# cell_for=generate_cell_formula('mp-6532')
-# #print(cell_for)
-# formu=get_POSCAR_title('mp-6532')
-# #print(formu)
-# final_string=generate_order_element(cell_for,formu)
-
-# structure_string=get_structure_by_mid('mp-6532',final_string)
-
-# generate_POSCAR(formu,out_matrix,final_string,structure_string,'mp-6532')
-
-#generate_file('mp-6532')
 
 print("running----------------------------------")
 for material_id in id_list:
