@@ -24,10 +24,9 @@ import io
 #first to query needed data from Materials Project website
 data = {
     'criteria': {
-        'elements': {'$in': ['Si'],'$all':['O']},
-        #'band_gap': {'$gt': 1},
-        #'e_above_hull':0
-        'nelements':2
+        'elements': {'$in': ['Si']},
+        'band_gap': {'$gt': 1},
+        'e_above_hull':0
     },
     'properties': [
         'pretty_formula',
