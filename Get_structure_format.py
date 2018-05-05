@@ -171,15 +171,26 @@ def get_structure_by_mid(material_id,final_string):
     cif_of_material=doc_of_material['cif']
     split_cif=cif_of_material.split('\n')
     
-    atom_index=split_cif.index(' _atom_site_occupancy')
-    atom_struc_list=split_cif[atom_index+1:-1]
-
+    if ' _atom_site_occupancy' in split_cif:
+        atom_index=split_cif.index(' _atom_site_occupancy')
+        atom_struc_list=split_cif[atom_index+1:-1]
+    elif '  _atom_site_occupancy' in split_cif:
+        atom_index=split_cif.index('  _atom_site_occupancy')
+        atom_struc_list=split_cif[atom_index+1:-1]
+    
     atom_new_list=[]
 
-    for stuff in atom_struc_list:
-        stuff=stuff[2:]
-        split_stf=stuff.split('  ')
-        atom_new_list.append(split_stf)
+    if atom_struc_list[0][0:3]!='   ':
+        for stuff in atom_struc_list:
+            stuff=stuff[2:]
+            split_stf=stuff.split('  ')
+            atom_new_list.append(split_stf)
+    elif atom_struc_list[0][0:3]=='   ':
+        for stuff in atom_struc_list:
+            stuff=stuff[3:]
+            split_stf=stuff.split('  ')
+            atom_new_list.append(split_stf)
+    #print(atom_new_list)
 
     element_list=final_string.split('\n')
     element_list1=element_list[0].split(' ')
